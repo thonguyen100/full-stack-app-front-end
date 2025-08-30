@@ -20,7 +20,7 @@ function Create() {
         setError('')
 
         try {
-            const response = await api.post('/add_user', values)
+            const response = await api.post('/api/add_user', values)
             console.log('Student added successfully:', response.data)
             navigate('/')
         } catch (err) {
