@@ -36,7 +36,7 @@ function Home() {
 
         try {
             setDeleteLoading(prev => ({ ...prev, [id]: true }))
-            await api.delete(`/delete/${id}`)
+            await api.delete(`/api/delete/${id}`)
             // Remove the deleted student from the state
             setData(prevData => prevData.filter(student => student.id !== id))
             console.log('Student deleted successfully')
