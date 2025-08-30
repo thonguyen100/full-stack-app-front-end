@@ -3,94 +3,105 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Edit() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null); // Use null to represent loading state
+  const [error, setError] = useState(null); // For error handling
   const { id } = useParams();
+  const navigate = useNavigate();
+
   useEffect(() => {
     axios
-      .get(`/get_student/${id}`)
+      .get(`/api/read/${id}`) // Fixed endpoint for getting the student data
       .then((res) => {
-        setData(res.data);
+        setData(res.data); // Assuming the backend returns a single student object
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setError("Failed to load student data.");
+      });
   }, [id]);
-
-  const navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
-
+    
+    // Send updated student data to the backend
     axios
-      .post(`/api/edit/${id}`, data[0])
+      .put(`/api/edit/${id}`, data) // Assuming you're using PUT to edit
       .then((res) => {
-        navigate("/");
+        navigate("/"); // Redirect to the home page after successful update
         console.log(res);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setError("Failed to update student data.");
+      });
   }
+
+  // Show loading or error state while fetching data
+  if (error) return <div className="alert alert-danger">{error}</div>;
+  if (!data) return <div>Loading...</div>; // Or show a loading spinner
 
   return (
     <div className="container-fluid vw-100 vh-100 bg-primary">
-      <h1>User {id}</h1>
+      <h1>Edit Student {id}</h1>
       <Link to="/" className="btn btn-success">
         Back
       </Link>
-      {data.map((student) => {
-        return (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group my-3">
-              <label htmlFor="name">Name</label>
-              <input
-                value={student.name}
-                type="text"
-                name="name"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], name: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="email">Email</label>
-              <input
-                value={student.email}
-                type="email"
-                name="email"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], email: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="gender">Gender</label>
-              <input
-                value={student.gender}
-                type="text"
-                name="gender"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], gender: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="age">Age</label>
-              <input
-                value={student.age}
-                type="number"
-                name="age"
-                required
-                onChange={(e) => setData([{ ...data[0], age: e.target.value }])}
-              />
-            </div>
-            <div className="form-group my-3">
-              <button type="submit" className="btn btn-success">
-                Save
-              </button>
-            </div>
-          </form>
-        );
-      })}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group my-3">
+          <label htmlFor="name">Name</label>
+          <input
+            value={data.name}
+            type="text"
+            name="name"
+            required
+            onChange={(e) =>
+              setData({ ...data, name: e.target.value }) // Update state without using map
+            }
+          />
+        </div>
+        <div className="form-group my-3">
+          <label htmlFor="email">Email</label>
+          <input
+            value={data.email}
+            type="email"
+            name="email"
+            required
+            onChange={(e) =>
+              setData({ ...data, email: e.target.value }) // Update state without using map
+            }
+          />
+        </div>
+        <div className="form-group my-3">
+          <label htmlFor="gender">Gender</label>
+          <input
+            value={data.gender}
+            type="text"
+            name="gender"
+            required
+            onChange={(e) =>
+              setData({ ...data, gender: e.target.value }) // Update state without using map
+            }
+          />
+        </div>
+        <div className="form-group my-3">
+          <label htmlFor="age">Age</label>
+          <input
+            value={data.age}
+            type="number"
+            name="age"
+            required
+            onChange={(e) =>
+              setData({ ...data, age: e.target.value }) // Update state without using map
+            }
+          />
+        </div>
+        <div className="form-group my-3">
+          <button type="submit" className="btn btn-success">
+            Save
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
