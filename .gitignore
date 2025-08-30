@@ -1,5 +1,2 @@
-dockerfile
-**/dockerfile.*
-
 build/
 .env
