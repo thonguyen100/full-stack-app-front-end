@@ -20,7 +20,7 @@ function Edit() {
     e.preventDefault();
 
     axios
-      .post(`/edit_user/${id}`, data[0])
+      .post(`/api/edit/${id}`, data[0])
       .then((res) => {
         navigate("/");
         console.log(res);

@@ -7,7 +7,7 @@ function Read() {
   const { id } = useParams();
   useEffect(() => {
     axios
-      .get(`/get_student/${id}`)
+      .get(`/api/read/${id}`)
       .then((res) => {
         setData(res.data);
       })
