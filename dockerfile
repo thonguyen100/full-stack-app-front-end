@@ -30,4 +30,4 @@ WORKDIR /app
 EXPOSE 5000
 
 # Start the static file server
-CMD ["serve", "-s", ".", "-l", "5000"]
+CMD ["serve", "-s", ".", "-l", "8080"]
