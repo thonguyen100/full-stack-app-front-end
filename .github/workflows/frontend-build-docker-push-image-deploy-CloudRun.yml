@@ -1,0 +1,73 @@
+name: frontend-build-docker-push-image-deploy-CloudRun
+
+on:
+  push:
+    branches: [ main, staging ]
+
+jobs:
+  build-docker-push-image-deploy-frontend:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Authenticate to GCP using Workload Identity Federation
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{secrets.STG_WORKLOAD_IDENTITY_PROVIDER}}
+          service_account: ${{secrets.STG_SERVICE_ACCOUNT}}
+
+      - name: Get Github Actions variables from Secret Manager
+        run: |
+          IMAGE_NAME=$(gcloud secrets versions access latest --secret="stg-artifact-registry-frontend-image-path")
+          IMAGE_TAG=${GITHUB_SHA::5}
+
+          CLOUD_RUN_FRONTEND_SERVICE_NAME=$(gcloud secrets versions access latest --secret="stg-cloud-run-frontend-service-name")
+
+          BACKEND_SERVICE_URL=$(gcloud secrets versions access latest --secret="stg-backend-service-url")
+
+
+          {
+            echo "IMAGE_NAME=$IMAGE_NAME"
+            echo "IMAGE_TAG=$IMAGE_TAG"
+            echo "CLOUD_RUN_FRONTEND_SERVICE_NAME=$CLOUD_RUN_FRONTEND_SERVICE_NAME"
+            echo "REACT_APP_API_URL=$BACKEND_SERVICE_URL"
+
+          } >> $GITHUB_ENV
+        
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker to use gcloud auth
+        run: |
+          gcloud auth configure-docker asia-east1-docker.pkg.dev
+
+      - name: Build and push Docker image to Artifact Registry
+        run: |
+          IMAGE_NAME=$IMAGE_NAME
+
+          docker build \
+          --build-arg REACT_APP_API_URL=${REACT_APP_API_URL} \
+          -t $IMAGE_NAME:$IMAGE_TAG \
+          -t $IMAGE_NAME:latest .
+
+          docker push $IMAGE_NAME:$IMAGE_TAG
+          docker push $IMAGE_NAME:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy $CLOUD_RUN_FRONTEND_SERVICE_NAME \
+            --image $IMAGE_NAME:$IMAGE_TAG \
+            --region asia-east1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --project=peak-nimbus-466309-n1
+      
+
+
+
