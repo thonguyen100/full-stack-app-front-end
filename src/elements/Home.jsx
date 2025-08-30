@@ -13,7 +13,7 @@ function Home() {
         try {
             setLoading(true)
             setError('')
-            const response = await api.get('/students')
+            const response = await api.get('/api/students')
             setData(response.data)
         } catch (err) {
             console.error('Error fetching students:', err)
