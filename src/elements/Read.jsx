@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
 function Read() {
-  const [data, setData] = useState(null); // Using null initially
+  const [data, setData] = useState(null); // Using null initially to represent loading state
   const [error, setError] = useState(null); // For error handling
   const { id } = useParams();
 
@@ -11,7 +11,11 @@ function Read() {
     axios
       .get(`/api/read/${id}`)
       .then((res) => {
-        setData(res.data); // Assuming backend returns a single student object
+        if (res.data) {
+          setData(res.data); // Assuming backend returns a single student object
+        } else {
+          setError("No data found for the provided student ID.");
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -19,14 +23,19 @@ function Read() {
       });
   }, [id]);
 
-  // Show loading or error state while fetching data
-  if (error) return <div className="alert alert-danger">{error}</div>;
-  if (!data) return <div>Loading...</div>; // Or show a loading spinner
+  // Show loading state while data is being fetched
+  if (!data && !error) return <div>Loading...</div>;
 
+  // Show error message if there's an issue fetching the data
+  if (error) return <div className="alert alert-danger">{error}</div>;
+
+  // Render student data when available
   return (
     <div className="container-fluid vw-100 vh-100 bg-primary">
       <h1>User {id}</h1>
-      <Link to="/" className="btn btn-success">Back</Link>
+      <Link to="/" className="btn btn-success">
+        Back
+      </Link>
       
       <ul className="list-group">
         <li className="list-group-item">
