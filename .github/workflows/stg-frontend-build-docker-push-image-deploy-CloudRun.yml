@@ -1,8 +1,8 @@
-name: frontend-build-docker-push-image-deploy-CloudRun
+name: stg-frontend-build-docker-push-image-deploy-CloudRun
 
 on:
   push:
-    branches: [ main, staging ]
+    branches: [ main, stg ]
 
 jobs:
   build-docker-push-image-deploy-frontend:
