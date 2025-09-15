@@ -1,8 +1,8 @@
-name: stg-frontend-build-docker-push-image-deploy-CloudRun
+name: prod-frontend-build-docker-push-image-deploy-CloudRun
 
 on:
   push:
-    branches: [ main, stg ]
+    branches: [ main, prod ]
 
 jobs:
   build-docker-push-image-deploy-frontend:
@@ -19,17 +19,17 @@ jobs:
       - name: Authenticate to GCP using Workload Identity Federation
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: ${{secrets.STG_WORKLOAD_IDENTITY_PROVIDER}}
-          service_account: ${{secrets.STG_SERVICE_ACCOUNT}}
+          workload_identity_provider: ${{secrets.PROD_WORKLOAD_IDENTITY_PROVIDER}}
+          service_account: ${{secrets.PROD_SERVICE_ACCOUNT}}
 
       - name: Get Github Actions variables from Secret Manager
         run: |
-          IMAGE_NAME=$(gcloud secrets versions access latest --secret="stg-artifact-registry-frontend-image-path")
+          IMAGE_NAME=$(gcloud secrets versions access latest --secret="prod-artifact-registry-frontend-image-path")
           IMAGE_TAG=${GITHUB_SHA::5}
 
-          CLOUD_RUN_FRONTEND_SERVICE_NAME=$(gcloud secrets versions access latest --secret="stg-cloud-run-frontend-service-name")
+          CLOUD_RUN_FRONTEND_SERVICE_NAME=$(gcloud secrets versions access latest --secret="prod-cloud-run-frontend-service-name")
 
-          BACKEND_SERVICE_URL=$(gcloud secrets versions access latest --secret="stg-backend-service-url")
+          BACKEND_SERVICE_URL=$(gcloud secrets versions access latest --secret="prod-backend-service-url")
 
 
           {
@@ -45,7 +45,7 @@ jobs:
 
       - name: Configure Docker to use gcloud auth
         run: |
-          gcloud auth configure-docker asia-east1-docker.pkg.dev
+          gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push Docker image to Artifact Registry
         run: |
@@ -64,7 +64,7 @@ jobs:
         run: |
           gcloud run deploy $CLOUD_RUN_FRONTEND_SERVICE_NAME \
             --image $IMAGE_NAME:$IMAGE_TAG \
-            --region asia-east1 \
+            --region us-central1 \
             --platform managed \
             --allow-unauthenticated \
             --project=peak-nimbus-466309-n1
