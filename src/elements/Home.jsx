@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../client'; // Axios client instance
+import api from '../client';
 
 function Home() {
   const [data, setData] = useState([]);
@@ -12,11 +12,24 @@ function Home() {
     try {
       setLoading(true);
       setError('');
-      const response = await api.get('/students'); // ✅ Removed '/api/'
-      setData(response.data);
+      const response = await api.get('/students');
+
+      console.log('[Home] API response:', response.data);
+
+      // ✅ Check if data is an array
+      if (Array.isArray(response.data)) {
+        setData(response.data);
+      } else if (Array.isArray(response.data.students)) {
+        setData(response.data.students);
+      } else {
+        setError('Unexpected response format from server.');
+        setData([]); // Prevent crash
+      }
+
     } catch (err) {
       console.error('Error fetching students:', err);
       setError(err.response?.data?.message || 'Failed to fetch students');
+      setData([]); // Fallback to empty array
     } finally {
       setLoading(false);
     }
@@ -27,7 +40,7 @@ function Home() {
 
     try {
       setDeleteLoading((prev) => ({ ...prev, [id]: true }));
-      await api.delete(`/delete/${id}`); // ✅ Removed '/api/'
+      await api.delete(`/delete/${id}`);
       setData((prev) => prev.filter((student) => student.id !== id));
       console.log('Student deleted successfully');
     } catch (err) {
@@ -76,7 +89,7 @@ function Home() {
             </div>
           )}
 
-          {data.length === 0 && !error ? (
+          {Array.isArray(data) && data.length === 0 && !error ? (
             <div className="alert alert-info text-center">
               <h5>No students found</h5>
               <p>Start by adding your first student!</p>
@@ -96,61 +109,69 @@ function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((student) => (
-                    <tr key={student.id}>
-                      <td>{student.id}</td>
-                      <td>{student.name}</td>
-                      <td>{student.email}</td>
-                      <td>{student.age}</td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            student.gender === 'Male'
-                              ? 'bg-primary'
-                              : student.gender === 'Female'
-                              ? 'bg-success'
-                              : 'bg-info'
-                          }`}
-                        >
-                          {student.gender}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <div className="btn-group" role="group">
-                          <Link
-                            className="btn btn-sm btn-outline-info"
-                            to={`/read/${student.id}`}
-                            title="View Details"
+                  {Array.isArray(data) ? (
+                    data.map((student) => (
+                      <tr key={student.id}>
+                        <td>{student.id}</td>
+                        <td>{student.name}</td>
+                        <td>{student.email}</td>
+                        <td>{student.age}</td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              student.gender === 'Male'
+                                ? 'bg-primary'
+                                : student.gender === 'Female'
+                                ? 'bg-success'
+                                : 'bg-info'
+                            }`}
                           >
-                            <i className="fas fa-eye"></i>
-                          </Link>
-                          <Link
-                            className="btn btn-sm btn-outline-warning"
-                            to={`/edit/${student.id}`}
-                            title="Edit Student"
-                          >
-                            <i className="fas fa-edit"></i>
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(student.id)}
-                            className="btn btn-sm btn-outline-danger"
-                            disabled={deleteLoading[student.id]}
-                            title="Delete Student"
-                          >
-                            {deleteLoading[student.id] ? (
-                              <span
-                                className="spinner-border spinner-border-sm"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
-                            ) : (
-                              <i className="fas fa-trash"></i>
-                            )}
-                          </button>
-                        </div>
+                            {student.gender}
+                          </span>
+                        </td>
+                        <td className="text-center">
+                          <div className="btn-group" role="group">
+                            <Link
+                              className="btn btn-sm btn-outline-info"
+                              to={`/read/${student.id}`}
+                              title="View Details"
+                            >
+                              <i className="fas fa-eye"></i>
+                            </Link>
+                            <Link
+                              className="btn btn-sm btn-outline-warning"
+                              to={`/edit/${student.id}`}
+                              title="Edit Student"
+                            >
+                              <i className="fas fa-edit"></i>
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(student.id)}
+                              className="btn btn-sm btn-outline-danger"
+                              disabled={deleteLoading[student.id]}
+                              title="Delete Student"
+                            >
+                              {deleteLoading[student.id] ? (
+                                <span
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                ></span>
+                              ) : (
+                                <i className="fas fa-trash"></i>
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center text-danger">
+                        Invalid data format from server.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
