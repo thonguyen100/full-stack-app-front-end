@@ -60,6 +60,11 @@ jobs:
           docker push $IMAGE_NAME:$IMAGE_TAG
           docker push $IMAGE_NAME:latest
 
+      - name: Debug React API URL
+        run: |
+          echo "REACT_APP_API_URL at build time: $REACT_APP_API_URL"
+
+
       - name: Deploy to Cloud Run
 
         run: |

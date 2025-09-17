@@ -27,7 +27,7 @@ COPY --from=builder /usr/src/app/build /app
 WORKDIR /app
 
 # Expose the port the app will run on
-EXPOSE 5000
+EXPOSE 8080
 
 # Start the static file server
 CMD ["serve", "-s", ".", "-l", "8080"]
