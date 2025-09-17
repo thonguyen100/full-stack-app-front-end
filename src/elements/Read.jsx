@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
-import api from '../client'; // Use the configured Axios instance
-
+import api from '../client';
+import './elements.css';
 
 function Read() {
-  const [data, setData] = useState(null); // Using null initially to represent loading state
-  const [error, setError] = useState(null); // For error handling
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
-    axios
-      .get(`/read/${id}`)
+    api.get(`/read/${id}`)
       .then((res) => {
         if (res.data) {
-          setData(res.data); // Assuming backend returns a single student object
+          setData(res.data);
         } else {
           setError("No data found for the provided student ID.");
         }
@@ -27,34 +25,96 @@ function Read() {
 
   // Show loading state while data is being fetched
   if (!data && !error) {
-  return (
-    <div className="container-fluid bg-primary vh-100 vw-100 d-flex justify-content-center align-items-center">
-      <div className="spinner-border text-light" role="status">
-        <span className="visually-hidden">Loading...</span>
+    return (
+      <div className="brutal-loading">
+        <div className="brutal-spinner"></div>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 
   // Show error message if there's an issue fetching the data
   if (error) {
-    return <div className="alert alert-danger m-4">{error}</div>;
+    return (
+      <div className="brutal-container">
+        <div className="brutal-content">
+          <div className="brutal-alert brutal-alert-danger">
+            ⚠ {error}
+          </div>
+          <Link to="/" className="brutal-btn brutal-btn-light">
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="container-fluid vw-100 vh-100 bg-primary text-white p-4">
-      <div className="mb-4 d-flex justify-content-between align-items-center">
-        <h2>Student Details</h2>
-        <Link to="/" className="btn btn-light">Back</Link>
+    <div className="brutal-container">
+      <div className="brutal-content">
+        <div className="brutal-header">
+          <h1 className="brutal-title" data-text="Student Details">
+            Student Details
+          </h1>
+          <div className="brutal-btn-group">
+            <Link to="/" className="brutal-btn brutal-btn-light">
+              ← Home
+            </Link>
+            <Link to={`/edit/${data.id}`} className="brutal-btn brutal-btn-warning">
+              ✏ Edit
+            </Link>
+          </div>
+        </div>
+
+        <div className="brutal-card">
+          <div className="brutal-card-header">
+            <h2 className="brutal-card-title">
+              #{data.id} - {data.name}
+            </h2>
+          </div>
+          
+          <ul className="brutal-list">
+            <li className="brutal-list-item">
+              <strong>Student ID:</strong> #{data.id}
+            </li>
+            <li className="brutal-list-item">
+              <strong>Full Name:</strong> {data.name}
+            </li>
+            <li className="brutal-list-item">
+              <strong>Email Address:</strong> {data.email}
+            </li>
+            <li className="brutal-list-item">
+              <strong>Age:</strong> {data.age} years old
+            </li>
+            <li className="brutal-list-item">
+              <strong>Gender:</strong> 
+              <span
+                className={`brutal-badge ${
+                  data.gender === 'Male'
+                    ? 'brutal-badge-male'
+                    : data.gender === 'Female'
+                    ? 'brutal-badge-female'
+                    : 'brutal-badge-other'
+                }`}
+                style={{ marginLeft: '12px' }}
+              >
+                {data.gender}
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="brutal-btn-group brutal-mt-4">
+          <Link to="/" className="brutal-btn brutal-btn-primary">
+            📋 All Students
+          </Link>
+          <Link to={`/edit/${data.id}`} className="brutal-btn brutal-btn-warning">
+            ✏ Edit Student
+          </Link>
+          <Link to="/create" className="brutal-btn brutal-btn-success">
+            ➕ Add New Student
+          </Link>
+        </div>
       </div>
-      <ul className="list-group">
-        <li className="list-group-item"><b>ID:</b> {data.id}</li>
-        <li className="list-group-item"><b>Name:</b> {data.name}</li>
-        <li className="list-group-item"><b>Email:</b> {data.email}</li>
-        <li className="list-group-item"><b>Age:</b> {data.age}</li>
-        <li className="list-group-item"><b>Gender:</b> {data.gender}</li>
-      </ul>
     </div>
   );
 }

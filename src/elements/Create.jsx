@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../client';
 import { Link, useNavigate } from 'react-router-dom';
+import './elements.css';
 
 function Create() {
   const [values, setValues] = useState({
@@ -20,7 +21,7 @@ function Create() {
     setError('');
 
     try {
-      const response = await api.post('/add_user', values); // ✅ Remove redundant `/api`
+      const response = await api.post('/add_user', values);
       console.log('Student added:', response.data);
       navigate('/');
     } catch (err) {
@@ -39,98 +40,115 @@ function Create() {
   };
 
   return (
-    <div className="container-fluid vh-100 vw-100 bg-primary text-white p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Add Student</h2>
-        <Link to="/" className="btn btn-light">Home</Link>
-      </div>
+    <div className="brutal-container">
+      <div className="brutal-content">
+        <div className="brutal-header">
+          <h1 className="brutal-title" data-text="Add Student">
+            Add Student
+          </h1>
+          <Link to="/" className="brutal-btn brutal-btn-light">
+            ← Home
+          </Link>
+        </div>
 
-      <form onSubmit={handleSubmit} className="bg-white text-dark p-4 rounded shadow">
         {error && (
-          <div className="alert alert-danger" role="alert">
-            {error}
+          <div className="brutal-alert brutal-alert-danger">
+            ⚠ {error}
           </div>
         )}
 
-        <div className="form-group my-3">
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            name="name"
-            className="form-control"
-            type="text"
-            value={values.name}
-            onChange={handleInputChange}
-            disabled={loading}
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="brutal-form">
+          <div className="brutal-form-group">
+            <label htmlFor="name" className="brutal-label">
+              Full Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              className="brutal-input"
+              type="text"
+              value={values.name}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+              placeholder="Enter student name"
+            />
+          </div>
 
-        <div className="form-group my-3">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            className="form-control"
-            type="email"
-            value={values.email}
-            onChange={handleInputChange}
-            disabled={loading}
-            required
-          />
-        </div>
+          <div className="brutal-form-group">
+            <label htmlFor="email" className="brutal-label">
+              Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              className="brutal-input"
+              type="email"
+              value={values.email}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+              placeholder="student@example.com"
+            />
+          </div>
 
-        <div className="form-group my-3">
-          <label htmlFor="gender">Gender</label>
-          <select
-            id="gender"
-            name="gender"
-            className="form-control"
-            value={values.gender}
-            onChange={handleInputChange}
-            disabled={loading}
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
+          <div className="brutal-form-group">
+            <label htmlFor="gender" className="brutal-label">
+              Gender
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              className="brutal-select"
+              value={values.gender}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+            >
+              <option value="">-- Select Gender --</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 
-        <div className="form-group my-3">
-          <label htmlFor="age">Age</label>
-          <input
-            id="age"
-            name="age"
-            className="form-control"
-            type="number"
-            min="1"
-            max="150"
-            value={values.age}
-            onChange={handleInputChange}
-            disabled={loading}
-            required
-          />
-        </div>
+          <div className="brutal-form-group">
+            <label htmlFor="age" className="brutal-label">
+              Age
+            </label>
+            <input
+              id="age"
+              name="age"
+              className="brutal-input"
+              type="number"
+              min="1"
+              max="150"
+              value={values.age}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+              placeholder="Enter age"
+            />
+          </div>
 
-        <div className="form-group mt-4">
-          <button
-            type="submit"
-            className="btn btn-success"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Saving...
-              </>
-            ) : (
-              'Save'
-            )}
-          </button>
-        </div>
-      </form>
+          <div className="brutal-form-group brutal-mt-4">
+            <button
+              type="submit"
+              className="brutal-btn brutal-btn-success"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <div className="brutal-spinner" style={{ width: '16px', height: '16px', display: 'inline-block', marginRight: '8px' }}></div>
+                  Saving Student...
+                </>
+              ) : (
+                '💾 Save Student'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
