@@ -30,13 +30,14 @@ jobs:
           CLOUD_RUN_FRONTEND_SERVICE_NAME=$(gcloud secrets versions access latest --secret="prod-cloud-run-frontend-service-name")
 
           BACKEND_SERVICE_URL=$(gcloud secrets versions access latest --secret="prod-backend-service-url")
+          ILB_IP=$(gcloud secrets versions access latest --secret="prod-internal-lb-static-ip")
 
 
           {
             echo "IMAGE_NAME=$IMAGE_NAME"
             echo "IMAGE_TAG=$IMAGE_TAG"
             echo "CLOUD_RUN_FRONTEND_SERVICE_NAME=$CLOUD_RUN_FRONTEND_SERVICE_NAME"
-            echo "REACT_APP_API_URL=$BACKEND_SERVICE_URL"
+            echo "REACT_APP_API_URL=$ILB_IP"
 
           } >> $GITHUB_ENV
         
