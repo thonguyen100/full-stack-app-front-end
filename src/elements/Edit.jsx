@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import api from "../client";
-import './elements.css';
+// import './elements.css';
+import 'client\src\styles\elements.css'; 
+
 
 function Edit() {
   const [data, setData] = useState(null);

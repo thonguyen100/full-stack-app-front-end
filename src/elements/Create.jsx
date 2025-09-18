@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import api from '../client';
 import { Link, useNavigate } from 'react-router-dom';
-import './elements.css';
+// import './elements.css'; 
+import 'client\src\styles\elements.css'; 
+
 
 function Create() {
   const [values, setValues] = useState({

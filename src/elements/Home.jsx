@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../client';
-import './elements.css';
+// import './elements.css';
+import 'client\src\styles\elements.css'; 
 
 function Home() {
   const [data, setData] = useState([]);
