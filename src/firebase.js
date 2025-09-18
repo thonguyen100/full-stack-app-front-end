@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "peak-nimbus-466309-n1.firebaseapp.com",
   projectId: "peak-nimbus-466309-n1",
   storageBucket: "peak-nimbus-466309-n1.firebasestorage.app",

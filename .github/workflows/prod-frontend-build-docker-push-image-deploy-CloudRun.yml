@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      FIREBASE_API_KEY: ${{secrets.FIREBASE_API_KEY}}
+      REACT_APP_FIREBASE_API_KEY: ${{secrets.REACT_APP_FIREBASE_API_KEY}}
 
     permissions:
       id-token: write
@@ -57,7 +57,7 @@ jobs:
 
           docker build \
           --build-arg REACT_APP_API_URL=${REACT_APP_API_URL} \
-          --build-arg FIREBASE_API_KEY=${FIREBASE_API_KEY} \
+          --build-arg REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY} \
           -t $IMAGE_NAME:$IMAGE_TAG \
           -t $IMAGE_NAME:latest .
 
