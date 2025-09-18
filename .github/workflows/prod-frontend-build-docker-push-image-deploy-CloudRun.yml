@@ -8,6 +8,9 @@ jobs:
   build-docker-push-image-deploy-frontend:
     runs-on: ubuntu-latest
 
+    env:
+      FIREBASE_API_KEY: ${{secrets.FIREBASE_API_KEY}}
+
     permissions:
       id-token: write
       contents: read
