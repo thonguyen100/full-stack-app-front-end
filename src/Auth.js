@@ -1,10 +1,11 @@
-// src/Signup.js
+// src/Auth.js (or you can put this directly in App.js)
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
 import { auth } from './firebase';
 import './styles/elements.css';
 
-function Signup({ onShowLogin }) {
+function Auth() {
+  const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -12,20 +13,33 @@ function Signup({ onShowLogin }) {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log('Logged in');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setSuccess('');
 
-    // Validate password confirmation
     if (password !== confirmPassword) {
       setError('Passwords do not match!');
       setLoading(false);
       return;
     }
 
-    // Validate password length
     if (password.length < 6) {
       setError('Password must be at least 6 characters long!');
       setLoading(false);
@@ -36,8 +50,6 @@ function Signup({ onShowLogin }) {
       await createUserWithEmailAndPassword(auth, email, password);
       setSuccess('Account created successfully! You can now log in.');
       setError('');
-      
-      // Clear form
       setEmail('');
       setPassword('');
       setConfirmPassword('');
@@ -49,21 +61,44 @@ function Signup({ onShowLogin }) {
     }
   };
 
+  const handleAnonymousLogin = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      await signInAnonymously(auth);
+      console.log('Logged in anonymously');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const switchMode = () => {
+    setIsSignup(!isSignup);
+    setError('');
+    setSuccess('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+  };
+
   return (
     <div className="brutal-container">
       <div className="brutal-content">
         <div className="brutal-header">
-          <h1 className="brutal-title">SIGN UP</h1>
+          <h1 className="brutal-title">{isSignup ? 'SIGN UP' : 'LOGIN'}</h1>
         </div>
 
         <div className="brutal-form">
-          <form onSubmit={handleSignup}>
+          <form onSubmit={isSignup ? handleSignup : handleLogin}>
             <div className="brutal-form-group">
-              <label className="brutal-label" htmlFor="signup-email">
+              <label className="brutal-label" htmlFor="email">
                 Email Address
               </label>
               <input
-                id="signup-email"
+                id="email"
                 type="email"
                 className="brutal-input"
                 value={email}
@@ -75,11 +110,11 @@ function Signup({ onShowLogin }) {
             </div>
 
             <div className="brutal-form-group">
-              <label className="brutal-label" htmlFor="signup-password">
+              <label className="brutal-label" htmlFor="password">
                 Password
               </label>
               <input
-                id="signup-password"
+                id="password"
                 type="password"
                 className="brutal-input"
                 value={password}
@@ -91,22 +126,24 @@ function Signup({ onShowLogin }) {
               />
             </div>
 
-            <div className="brutal-form-group">
-              <label className="brutal-label" htmlFor="confirm-password">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                type="password"
-                className="brutal-input"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password..."
-                required
-                disabled={loading}
-                minLength={6}
-              />
-            </div>
+            {isSignup && (
+              <div className="brutal-form-group">
+                <label className="brutal-label" htmlFor="confirm-password">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirm-password"
+                  type="password"
+                  className="brutal-input"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your password..."
+                  required
+                  disabled={loading}
+                  minLength={6}
+                />
+              </div>
+            )}
 
             {error && (
               <div className="brutal-alert brutal-alert-danger">
@@ -124,23 +161,37 @@ function Signup({ onShowLogin }) {
               <button
                 type="submit"
                 className="brutal-btn brutal-btn-primary"
-                disabled={loading || !email || !password || !confirmPassword}
+                disabled={loading || !email || !password || (isSignup && !confirmPassword)}
               >
-                {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
+                {loading 
+                  ? (isSignup ? 'CREATING ACCOUNT...' : 'LOGGING IN...') 
+                  : (isSignup ? 'CREATE ACCOUNT' : 'LOG IN')
+                }
               </button>
+
+              {!isSignup && (
+                <button
+                  type="button"
+                  className="brutal-btn brutal-btn-warning"
+                  onClick={handleAnonymousLogin}
+                  disabled={loading}
+                >
+                  {loading ? 'CONNECTING...' : 'GUEST LOGIN'}
+                </button>
+              )}
             </div>
 
             <div className="brutal-mt-4 brutal-text-center">
               <p style={{ marginBottom: '16px', fontWeight: '700' }}>
-                ALREADY HAVE AN ACCOUNT?
+                {isSignup ? "ALREADY HAVE AN ACCOUNT?" : "DON'T HAVE AN ACCOUNT?"}
               </p>
               <button
                 type="button"
-                className="brutal-btn brutal-btn-info"
-                onClick={onShowLogin}
+                className={`brutal-btn ${isSignup ? 'brutal-btn-info' : 'brutal-btn-success'}`}
+                onClick={switchMode}
                 disabled={loading}
               >
-                BACK TO LOGIN
+                {isSignup ? 'BACK TO LOGIN' : 'CREATE ACCOUNT'}
               </button>
             </div>
           </form>
@@ -150,4 +201,4 @@ function Signup({ onShowLogin }) {
   );
 }
 
-export default Signup;
+export default Auth;
