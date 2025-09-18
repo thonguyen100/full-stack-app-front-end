@@ -68,7 +68,7 @@ function Home() {
       <div className="brutal-content">
         <div className="brutal-header">
           <h1 className="brutal-title brutal-glitch" data-text="Wiz Tech Finance">
-            Students Database
+            Wiz Tech Finance
           </h1>
           <Link className="brutal-btn brutal-btn-success" to="/create">
             ➕ Add Student
