@@ -56,7 +56,7 @@ jobs:
           IMAGE_NAME=$IMAGE_NAME
 
           docker build \
-          --build-arg REACT_APP_API_URL=${REACT_APP_API_URL} \ 
+          --build-arg REACT_APP_API_URL=${REACT_APP_API_URL} \
           --build-arg FIREBASE_API_KEY=${FIREBASE_API_KEY} \
           -t $IMAGE_NAME:$IMAGE_TAG \
           -t $IMAGE_NAME:latest .
