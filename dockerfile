@@ -11,6 +11,9 @@ RUN npm install
 # Copy app source and build it
 COPY . .
 ARG REACT_APP_API_URL
+ARG FIREBASE_API_KEY
+
+ENV FIREBASE_API_KEY=$FIREBASE_API_KEY
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 RUN npm run build
 
