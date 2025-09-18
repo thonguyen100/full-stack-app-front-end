@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from '../client';
 // import './elements.css';
-import './styles/elements.css'; 
+import '../styles/elements.css'; 
 
 function Read() {
   const [data, setData] = useState(null);

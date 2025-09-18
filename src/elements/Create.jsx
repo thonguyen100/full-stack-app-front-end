@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from '../client';
 import { Link, useNavigate } from 'react-router-dom';
 // import './elements.css'; 
-import './styles/elements.css'; 
+import '../styles/elements.css'; 
 
 
 function Create() {
