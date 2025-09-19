@@ -81,8 +81,8 @@ function Home({ canWrite, user }) {
       <div className="brutal-container">
         <div className="brutal-content">
           <div className="brutal-header">
-            <h1 className="brutal-title brutal-glitch" data-text="Wiz Tech Finance">
-              Wiz Tech Finance
+            <h1 className="brutal-title brutal-glitch" data-text="WTF">
+              WTF
             </h1>
             {canWrite && (
               <Link className="brutal-btn brutal-btn-success" to="/create">
