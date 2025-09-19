@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navigation from '../components/Navigation';
 import api from '../client';
+import Auth from '../Auth';
 import '../styles/elements.css';
 
 function Read({ user }) {

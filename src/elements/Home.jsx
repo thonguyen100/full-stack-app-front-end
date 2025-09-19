@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import api from '../client';
+import Auth from '../Auth';
 import '../styles/elements.css';
 
 function Home({ canWrite, user }) {

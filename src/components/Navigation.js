@@ -33,7 +33,7 @@ function Navigation({ user, canWrite }) {
     <nav className="brutal-navbar">
       <div className="brutal-navbar-brand">
         <Link to="/" className="brutal-navbar-logo">
-          MY APP
+          👌
         </Link>
       </div>
       
