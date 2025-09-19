@@ -1,10 +1,11 @@
+// Updated Home.jsx with Navigation and Authentication
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Navigation from '../components/Navigation';
 import api from '../client';
-// import './elements.css';
-import '../styles/elements.css'; 
+import '../styles/elements.css';
 
-function Home() {
+function Home({ canWrite, user }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -37,7 +38,12 @@ function Home() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('⚠ Are you ABSOLUTELY sure you want to DELETE this student? This action cannot be undone!')) return;
+    if (!canWrite) {
+      alert('You need to be logged in with an email account to delete students.');
+      return;
+    }
+
+    if (!window.confirm('Are you ABSOLUTELY sure you want to DELETE this student? This action cannot be undone!')) return;
 
     try {
       setDeleteLoading((prev) => ({ ...prev, [id]: true }));
@@ -58,124 +64,152 @@ function Home() {
 
   if (loading) {
     return (
-      <div className="brutal-loading">
-        <div className="brutal-spinner"></div>
+      <div>
+        <Navigation user={user} canWrite={canWrite} />
+        <div className="brutal-loading">
+          <div className="brutal-spinner"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="brutal-container">
-      <div className="brutal-content">
-        <div className="brutal-header">
-          <h1 className="brutal-title brutal-glitch" data-text="Wiz Tech Finance">
-            Wiz Tech Finance
-          </h1>
-          <Link className="brutal-btn brutal-btn-success" to="/create">
-            ➕ Add Student
-          </Link>
-        </div>
-
-        {error && (
-          <div className="brutal-alert brutal-alert-danger">
-            ⚠ {error}
-            <button
-              className="brutal-btn brutal-btn-light"
-              onClick={fetchStudents}
-              style={{ marginLeft: '16px', padding: '8px 16px', fontSize: '0.9rem' }}
-            >
-              🔄 Retry
-            </button>
+    <div>
+      <Navigation user={user} canWrite={canWrite} />
+      
+      <div className="brutal-container">
+        <div className="brutal-content">
+          <div className="brutal-header">
+            <h1 className="brutal-title brutal-glitch" data-text="Wiz Tech Finance">
+              Wiz Tech Finance
+            </h1>
+            {canWrite && (
+              <Link className="brutal-btn brutal-btn-success" to="/create">
+                Add Student
+              </Link>
+            )}
           </div>
-        )}
 
-        {Array.isArray(data) && data.length === 0 && !error ? (
-          <div className="brutal-alert brutal-alert-info brutal-text-center">
-            <h2>📝 NO STUDENTS FOUND</h2>
-            <p style={{ fontSize: '1.2rem', margin: '16px 0' }}>
-              The database is empty. Start by adding your first student!
-            </p>
-            <Link className="brutal-btn brutal-btn-success" to="/create">
-              ➕ Add First Student
-            </Link>
-          </div>
-        ) : (
-          <div className="brutal-table-container">
-            <table className="brutal-table">
-              <thead className="brutal-table-header">
-                <tr>
-                  <th>ID</th>
-                  <th>NAME</th>
-                  <th>EMAIL</th>
-                  <th>AGE</th>
-                  <th>GENDER</th>
-                  <th className="brutal-text-center">ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(data) ? (
-                  data.map((student) => (
-                    <tr key={student.id}>
-                      <td>#{student.id}</td>
-                      <td>{student.name}</td>
-                      <td>{student.email}</td>
-                      <td>{student.age} yrs</td>
-                      <td>
-                        <span
-                          className={`brutal-badge ${
-                            student.gender === 'Male'
-                              ? 'brutal-badge-male'
-                              : student.gender === 'Female'
-                              ? 'brutal-badge-female'
-                              : 'brutal-badge-other'
-                          }`}
-                        >
-                          {student.gender}
-                        </span>
-                      </td>
-                      <td className="brutal-text-center">
-                        <div className="brutal-btn-group">
-                          <Link
-                            className="brutal-btn brutal-btn-info"
-                            to={`/read/${student.id}`}
-                            title="View Details"
+          {!canWrite && user?.isAnonymous && (
+            <div className="brutal-alert brutal-alert-info">
+              <strong>INFO:</strong> You're browsing as a guest (read-only access). 
+              <Link to="/auth" style={{ color: 'inherit', textDecoration: 'underline', marginLeft: '8px' }}>
+                Sign up with email
+              </Link> to create and edit students.
+            </div>
+          )}
+
+          {error && (
+            <div className="brutal-alert brutal-alert-danger">
+              {error}
+              <button
+                className="brutal-btn brutal-btn-light"
+                onClick={fetchStudents}
+                style={{ marginLeft: '16px', padding: '8px 16px', fontSize: '0.9rem' }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {Array.isArray(data) && data.length === 0 && !error ? (
+            <div className="brutal-alert brutal-alert-info brutal-text-center">
+              <h2>NO STUDENTS FOUND</h2>
+              <p style={{ fontSize: '1.2rem', margin: '16px 0' }}>
+                The database is empty. {canWrite ? 'Start by adding your first student!' : 'No students available to view.'}
+              </p>
+              {canWrite && (
+                <Link className="brutal-btn brutal-btn-success" to="/create">
+                  Add First Student
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="brutal-table-container">
+              <table className="brutal-table">
+                <thead className="brutal-table-header">
+                  <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>EMAIL</th>
+                    <th>AGE</th>
+                    <th>GENDER</th>
+                    <th className="brutal-text-center">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(data) ? (
+                    data.map((student) => (
+                      <tr key={student.id}>
+                        <td>#{student.id}</td>
+                        <td>{student.name}</td>
+                        <td>{student.email}</td>
+                        <td>{student.age} yrs</td>
+                        <td>
+                          <span
+                            className={`brutal-badge ${
+                              student.gender === 'Male'
+                                ? 'brutal-badge-male'
+                                : student.gender === 'Female'
+                                ? 'brutal-badge-female'
+                                : 'brutal-badge-other'
+                            }`}
                           >
-                            👁 View
-                          </Link>
-                          <Link
-                            className="brutal-btn brutal-btn-warning"
-                            to={`/edit/${student.id}`}
-                            title="Edit Student"
-                          >
-                            ✏ Edit
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(student.id)}
-                            className="brutal-btn brutal-btn-danger"
-                            disabled={deleteLoading[student.id]}
-                            title="Delete Student"
-                          >
-                            {deleteLoading[student.id] ? (
-                              <div className="brutal-spinner" style={{ width: '16px', height: '16px' }}></div>
+                            {student.gender}
+                          </span>
+                        </td>
+                        <td className="brutal-text-center">
+                          <div className="brutal-btn-group">
+                            <Link
+                              className="brutal-btn brutal-btn-info"
+                              to={`/read/${student.id}`}
+                              title="View Details"
+                            >
+                              View
+                            </Link>
+                            {canWrite ? (
+                              <>
+                                <Link
+                                  className="brutal-btn brutal-btn-warning"
+                                  to={`/edit/${student.id}`}
+                                  title="Edit Student"
+                                >
+                                  Edit
+                                </Link>
+                                <button
+                                  onClick={() => handleDelete(student.id)}
+                                  className="brutal-btn brutal-btn-danger"
+                                  disabled={deleteLoading[student.id]}
+                                  title="Delete Student"
+                                >
+                                  {deleteLoading[student.id] ? (
+                                    <div className="brutal-spinner" style={{ width: '16px', height: '16px' }}></div>
+                                  ) : (
+                                    'Delete'
+                                  )}
+                                </button>
+                              </>
                             ) : (
-                              '🗑 Delete'
+                              <span style={{ fontSize: '0.8rem', color: '#666', fontStyle: 'italic' }}>
+                                Read Only
+                              </span>
                             )}
-                          </button>
-                        </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="brutal-text-center">
+                        INVALID DATA FORMAT FROM SERVER
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="brutal-text-center">
-                      ⚠ INVALID DATA FORMAT FROM SERVER
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

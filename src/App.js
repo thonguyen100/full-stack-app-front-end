@@ -24,6 +24,16 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  // Helper function to check if user can write (only email users)
+  const canWrite = () => {
+    return user && !user.isAnonymous;
+  };
+
+  // Helper function to check if user can read (all authenticated users)
+  const canRead = () => {
+    return user !== null;
+  };
+
   if (authLoading) {
     return (
       <div className="brutal-loading">
@@ -37,19 +47,19 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={user ? <Home /> : <Navigate to="/auth" replace />}
+          element={canRead() ? <Home canWrite={canWrite()} user={user} /> : <Navigate to="/auth" replace />}
         />
         <Route
           path="/create"
-          element={user ? <Create /> : <Navigate to="/auth" replace />}
+          element={canWrite() ? <Create user={user} /> : canRead() ? <Navigate to="/" replace /> : <Navigate to="/auth" replace />}
         />
         <Route
           path="/edit/:id"
-          element={user ? <Edit /> : <Navigate to="/auth" replace />}
+          element={canWrite() ? <Edit user={user} /> : canRead() ? <Navigate to="/" replace /> : <Navigate to="/auth" replace />}
         />
         <Route
           path="/read/:id"
-          element={user ? <Read /> : <Navigate to="/auth" replace />}
+          element={canRead() ? <Read user={user} /> : <Navigate to="/auth" replace />}
         />
         {/* Single auth route that handles both login and signup */}
         <Route
@@ -68,7 +78,7 @@ function App() {
         {/* Catch all other routes */}
         <Route
           path="*"
-          element={user ? <Navigate to="/" replace /> : <Navigate to="/auth" replace />}
+          element={canRead() ? <Navigate to="/" replace /> : <Navigate to="/auth" replace />}
         />
       </Routes>
     </BrowserRouter>

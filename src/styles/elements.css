@@ -1,4 +1,4 @@
-/* Brutalism Theme CSS */
+/* Brutalism Theme CSS with Navigation */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
 
 :root {
@@ -27,6 +27,105 @@ body {
   color: var(--brutal-black);
   font-weight: 700;
   line-height: 1.2;
+}
+
+/* Navigation Styles */
+.brutal-navbar {
+  background-color: var(--brutal-black);
+  border: 4px solid var(--brutal-black);
+  box-shadow: 8px 8px 0px #ff0080;
+  padding: 16px 24px;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brutal-navbar-brand {
+  flex-shrink: 0;
+}
+
+.brutal-navbar-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--brutal-white);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.brutal-navbar-logo:hover {
+  color: #00ff80;
+  text-shadow: 2px 2px 0px var(--brutal-black);
+}
+
+.brutal-navbar-center {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.brutal-navbar-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.brutal-navbar-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--brutal-white);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.brutal-navbar-link:hover {
+  color: #00ff80;
+  border-color: #00ff80;
+  background-color: rgba(0, 255, 128, 0.1);
+}
+
+.brutal-navbar-end {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.brutal-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.brutal-user-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brutal-white);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.brutal-user-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Container Styles */
@@ -145,6 +244,13 @@ body {
   cursor: not-allowed;
   transform: none !important;
   box-shadow: 4px 4px 0px var(--brutal-gray) !important;
+}
+
+/* Small button variant */
+.brutal-btn-sm {
+  padding: 8px 16px;
+  font-size: 12px;
+  letter-spacing: 1px;
 }
 
 /* Form Styles */
@@ -287,6 +393,7 @@ body {
 .brutal-btn-group {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .brutal-btn-group .brutal-btn {
@@ -407,6 +514,27 @@ body {
 @media (max-width: 768px) {
   .brutal-container {
     padding: 16px;
+  }
+  
+  .brutal-navbar {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .brutal-navbar-center {
+    order: 2;
+    width: 100%;
+  }
+  
+  .brutal-navbar-end {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .brutal-user-info {
+    align-items: center;
+    margin-bottom: 12px;
   }
   
   .brutal-header {
